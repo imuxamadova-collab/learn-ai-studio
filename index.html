@@ -316,7 +316,39 @@ plan:p=>{let o='<table><tr><th>Week</th><th>Focus</th><th>Plan</th></tr>';for(le
 code:p=>{const R=[[/^\s*<\/?(\w+)/,m=>`HTML tag <code>&lt;${m[1]}&gt;</code>: structures part of the page.`],[/^\s*([\w-]+)\s*:\s*[^;]+;/,m=>`CSS rule setting <code>${m[1]}</code>.`],[/^\s*[.#]?[\w-]+[^{]*\{/,()=>"CSS selector starting a style block."],[/(const|let|var)\s+(\w+)/,m=>`Declares ${m[1]==="const"?"a constant":"a variable"} named <code>${m[2]}</code>.`],[/function\s+(\w+)/,m=>`Defines function <code>${m[1]}</code>.`],[/=>/,()=>"Arrow function."],[/addEventListener/,()=>"Runs code when an event happens."],[/querySelector|getElementById/,()=>"Finds an element in the page."],[/^\s*(if|else)/,()=>"Conditional: runs only when the condition holds."],[/^\s*for|while/,()=>"Loop: repeats a block."],[/console\.log/,()=>"Prints a value to the console."],[/fetch\(/,()=>"Requests data from a URL."],[/return/,()=>"Sends a value back."]];
 const ls=p.x.split("\n").filter(l=>l.trim());if(!ls.length)return"Paste some code first.";return"<table>"+ls.map(l=>{let n="General statement or closing bracket.";for(const[r,f]of R){const m=l.match(r);if(m){n=f(m);break}}return`<tr><td><code>${esc(l.trim())}</code></td><td>${n}</td></tr>`}).join("")+"</table>"},
 write:p=>{const t=p.x.trim(),w=t.split(/\s+/).filter(Boolean),s=t.split(/[.!?]+/).filter(x=>x.trim()),avg=Math.round(w.length/Math.max(s.length,1)),tips=[];if(w.length<20)tips.push("Add more detail: aim for at least 20 words.");if(avg>25)tips.push("Average sentence is "+avg+" words. Split long sentences.");const weak=w.filter(x=>/^(very|really|thing|stuff|nice|good)$/i.test(x));if(weak.length)tips.push("Replace vague words: "+[...new Set(weak.map(x=>x.toLowerCase()))].join(", ")+".");const rp={};w.forEach(x=>{x=x.toLowerCase().replace(/\W/g,"");if(x.length>4)rp[x]=(rp[x]||0)+1});const r=Object.keys(rp).filter(k=>rp[k]>2);if(r.length)tips.push("Repeated often: "+r.join(", ")+".");if(!/^[A-Z]/.test(t))tips.push("Start with a capital letter.");if(!/[.!?]$/.test(t))tips.push("End with punctuation.");return`<p><b>${w.length}</b> words · <b>${s.length}</b> sentences · avg <b>${avg}</b> words/sentence</p><ul>${(tips.length?tips:["Looks clear. Nice work!"]).map(x=>`<li>${x}</li>`).join("")}</ul>`}};
-async function ai(f,d){const b=f.querySelector("button"),o=$("#out");b.disabled=1;o.innerHTML='<p class="mu">Thinking…</p>';try{if(f.dataset.t==="teach")d.grade=document.querySelector('[name="grade"]')?.value||"1";
+async function ai(f,d){
+  const b=f.querySelector("button"),o=$("#out");
+  b.disabled=1;
+  o.innerHTML='<p class="mu">Thinking…</p>';
+  try{
+    if(f.dataset.t==="teach"){
+      d.grade=document.querySelector('[name="grade"]')?.value||"1";
+      d.lang=document.querySelector('[name="lang"]')?.value||"uz";
+      d.subject=document.querySelector('[name="subject"]')?.value||"Matematika";
+      d.mode=document.querySelector('[name="mode"]')?.value||"teacher";
+      T.chat.push(["me",d.x]);
+      route(1);
+      const a=await AI.run("teach",d);
+      T.chat.push(["ai",a]);
+      rec("Asked AI Teacher",5);
+      route(1);
+      return;
+    }
+    if(f.dataset.t==="plan"){
+      d.w=Math.min(8,Math.max(1,+d.w||4));
+      d.d=Math.min(7,Math.max(1,+d.d||5));
+      d.h=Math.min(8,Math.max(.5,+d.h||1));
+      if(!d.s.trim())throw Error("Enter a subject.");
+    }else if(!d.x.trim()){
+      throw Error("Please enter some text first.");
+    }
+    o.innerHTML=await AI.run(f.dataset.t,d);
+    rec("Used AI "+f.dataset.t,5);
+  }catch(e){
+    o.innerHTML=`<p class="err">${esc(e.message)}</p>`;
+  }
+  b.disabled=0;
+};try{if(f.dataset.t==="teach")d.grade=document.querySelector('[name="grade"]')?.value||"1";
 d.lang=document.querySelector('[name="lang"]')?.value||"uz";
 d.subject=document.querySelector('[name="subject"]')?.value||"Matematika";
 d.mode=document.querySelector('[name="mode"]')?.value||"teacher";{T.chat.push(["me",d.x]);route(1);const a=await AI.run("teach",d);T.chat.push(["ai",a]);rec("Asked AI Teacher",5);route(1);return}
