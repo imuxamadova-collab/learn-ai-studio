@@ -104,6 +104,8 @@ teach:p=>{
   const q=String(p.x||"").toLowerCase();
   const lang=p.lang||"uz";
   const quick=p.mode==="quick";
+  const grade=Math.max(1,Math.min(11,Number(p.grade)||1));
+const subject=p.subject||"Matematika";
 
   const topics=[
     {
@@ -290,10 +292,14 @@ teach:p=>{
     return messages[lang]||messages.uz;
   }
 
-  const title=t.title[lang]||t.title.uz;
+  const title=t.title[lang]||t.title.uz;const gradeInfo={
+uz:`${grade}-sinf | Fan: ${subject}`,
+ru:`${grade}-й класс | Предмет: ${subject}`,
+en:`Grade ${grade} | Subject: ${subject}`
+};
   const explain=t.explain[lang]||t.explain.uz;
 
-  if(quick) return title+": "+explain;
+  if(quick) return (gradeInfo[lang]||gradeInfo.uz)+"\n\n"+title+"\n\n"+h[0]+explain+
 
   const headings={
     uz:["Tushuntirish: ","Misol: ","Mustahkamlash: "],
