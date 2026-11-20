@@ -99,7 +99,213 @@ if(k==="ai")ai(f,d)});
 const KB={"neural network":"A neural network is layers of simple units that each weigh their inputs. Training nudges those weights until outputs match known examples.","machine learning":"Machine learning lets a program find patterns in data instead of following hand-written rules. You show examples, it adjusts itself to predict new cases.","closure":"A closure is a function that remembers the variables from the place it was created, even after that outer function has finished.","recursion":"Recursion is a function calling itself on a smaller version of the problem until it reaches a simple base case.","fraction":"A fraction shows part of a whole: the bottom number says how many equal parts, the top says how many you have.","flexbox":"Flexbox arranges items along one axis. Use display:flex, then justify-content for the main axis and align-items for the cross axis.","api":"An API is a menu of requests one program lets another make, such as asking a server for a list of courses."};
 const AI={mode:"demo",async run(t,p){await new Promise(r=>setTimeout(r,550));return DEMO[t](p)}};
 const WK=["Foundations","Core practice","Applied projects","Review and test","Stretch goals","Revision","Mock exam","Final polish"];
-const DEMO={teach:p=>{const q=p.x.toLowerCase(),k=Object.keys(KB).find(k=>q.includes(k));return k?KB[k]+" Want an example?":"Good question. In demo mode I only know a few topics (neural network, machine learning, closure, recursion, fraction, flexbox, API). Try one of those."},
+const DEMO={
+teach:p=>{
+  const q=String(p.x||"").toLowerCase();
+  const lang=p.lang||"uz";
+  const quick=p.mode==="quick";
+
+  const topics=[
+    {
+      keys:["kasr","fraction","дроб"],
+      title:{uz:"Kasrlar",ru:"Дроби",en:"Fractions"},
+      explain:{
+        uz:"Kasr butunning teng qismlaridan birini yoki bir nechtasini bildiradi. Maxraj nechta teng qism borligini, surat esa nechta qism olinganini ko‘rsatadi.",
+        ru:"Дробь показывает одну или несколько равных частей целого. Знаменатель показывает количество частей, числитель — сколько частей взято.",
+        en:"A fraction represents equal parts of a whole. The denominator shows the total parts, and the numerator shows how many are taken."
+      },
+      example:{
+        uz:"3/4 — butun 4 teng qismga bo‘lingan va uning 3 qismi olingan.",
+        ru:"3/4 означает, что целое разделено на 4 равные части и взяты 3.",
+        en:"3/4 means a whole is divided into 4 equal parts and 3 are taken."
+      },
+      practice:{
+        uz:"Mashq: 1/2 va 1/4 kasrlaridan qaysi biri katta?",
+        ru:"Задание: какая дробь больше — 1/2 или 1/4?",
+        en:"Practice: Which fraction is greater, 1/2 or 1/4?"
+      }
+    },
+    {
+      keys:["tenglama","equation","уравнен"],
+      title:{uz:"Tenglamalar",ru:"Уравнения",en:"Equations"},
+      explain:{
+        uz:"Tenglama — noma’lum son qatnashgan matematik tenglik. Maqsadimiz noma’lum sonni topish.",
+        ru:"Уравнение — математическое равенство с неизвестным числом. Наша задача — найти его.",
+        en:"An equation is a mathematical equality containing an unknown value. Our goal is to find it."
+      },
+      example:{
+        uz:"x + 5 = 12. Demak, x = 12 − 5 = 7.",
+        ru:"x + 5 = 12. Значит, x = 12 − 5 = 7.",
+        en:"x + 5 = 12. So x = 12 − 5 = 7."
+      },
+      practice:{
+        uz:"Mashq: x + 8 = 15. x ni top.",
+        ru:"Задание: x + 8 = 15. Найди x.",
+        en:"Practice: x + 8 = 15. Find x."
+      }
+    },
+    {
+      keys:["foiz","prosent","percent","процент"],
+      title:{uz:"Foizlar",ru:"Проценты",en:"Percentages"},
+      explain:{
+        uz:"Foiz — sonning yuzdan bir ulushi. 1% = 1/100.",
+        ru:"Процент — одна сотая часть числа. 1% = 1/100.",
+        en:"A percent is one hundredth of a number. 1% = 1/100."
+      },
+      example:{
+        uz:"200 ning 10 foizi: 200 × 10 / 100 = 20.",
+        ru:"10 процентов от 200: 200 × 10 / 100 = 20.",
+        en:"10 percent of 200: 200 × 10 / 100 = 20."
+      },
+      practice:{
+        uz:"Mashq: 300 ning 20 foizini top.",
+        ru:"Задание: найди 20 процентов от 300.",
+        en:"Practice: Find 20 percent of 300."
+      }
+    },
+    {
+      keys:["neyron","neural","нейрон"],
+      title:{uz:"Neyron tarmoq",ru:"Нейронная сеть",en:"Neural network"},
+      explain:{
+        uz:"Neyron tarmoq — ma’lumotlardan qonuniyatlarni o‘rganadigan sun’iy intellekt modeli.",
+        ru:"Нейронная сеть — модель искусственного интеллекта, которая учится находить закономерности в данных.",
+        en:"A neural network is an AI model that learns patterns from data."
+      },
+      example:{
+        uz:"Masalan, model ko‘plab mushuk rasmlarini o‘rganib, yangi rasmdagi mushukni aniqlashi mumkin.",
+        ru:"Например, модель может научиться распознавать кошек по множеству изображений.",
+        en:"For example, a model can learn to recognize cats by studying many images."
+      },
+      practice:{
+        uz:"Mashq: Neyron tarmoq qanday ma’lumotlardan o‘rganishi mumkin?",
+        ru:"Задание: на каких данных может обучаться нейронная сеть?",
+        en:"Practice: What kind of data can a neural network learn from?"
+      }
+    },
+    {
+      keys:["mashinaviy o‘rgan","machine learning","машинное обучение"],
+      title:{uz:"Mashinaviy o‘rganish",ru:"Машинное обучение",en:"Machine learning"},
+      explain:{
+        uz:"Mashinaviy o‘rganish — kompyuterning misollar va ma’lumotlar asosida qonuniyatlarni o‘rganish usuli.",
+        ru:"Машинное обучение — способ изучения закономерностей компьютером на основе примеров и данных.",
+        en:"Machine learning is a way for computers to learn patterns from examples and data."
+      },
+      example:{
+        uz:"Masalan, elektron pochta tizimi spam xatlarni aniqlashni o‘rganishi mumkin.",
+        ru:"Например, почтовая система может научиться находить спам.",
+        en:"For example, an email system can learn to identify spam."
+      },
+      practice:{
+        uz:"Mashq: Mashinaviy o‘rganish ishlatiladigan bitta sohani ayt.",
+        ru:"Задание: назови одну область применения машинного обучения.",
+        en:"Practice: Name one field where machine learning is used."
+      }
+    },
+    {
+      keys:["rekurs","recursion","рекурс"],
+      title:{uz:"Rekursiya",ru:"Рекурсия",en:"Recursion"},
+      explain:{
+        uz:"Rekursiya — funksiyaning masalaning kichikroq qismini yechish uchun o‘zini qayta chaqirishi.",
+        ru:"Рекурсия — это когда функция вызывает саму себя для решения меньшей части задачи.",
+        en:"Recursion is when a function calls itself to solve a smaller part of a problem."
+      },
+      example:{
+        uz:"Masalan, sonni 1 gacha kamaytirib boradigan funksiya rekursiyadan foydalanishi mumkin.",
+        ru:"Например, функция может постепенно уменьшать число до 1.",
+        en:"For example, a function can gradually reduce a number to 1."
+      },
+      practice:{
+        uz:"Mashq: Rekursiv funksiya qachon to‘xtashi kerak?",
+        ru:"Задание: когда должна остановиться рекурсивная функция?",
+        en:"Practice: When should a recursive function stop?"
+      }
+    },
+    {
+      keys:["closure","замыкан"],
+      title:{uz:"Closure",ru:"Замыкание",en:"Closure"},
+      explain:{
+        uz:"Closure — JavaScript funksiyasining o‘zi yaratilgan tashqi muhitdagi o‘zgaruvchilarni eslab qolish xususiyati.",
+        ru:"Замыкание — способность функции JavaScript помнить переменные из внешней области.",
+        en:"A closure is a JavaScript function that remembers variables from its outer scope."
+      },
+      example:{
+        uz:"Ichki funksiya tashqi funksiyada yaratilgan o‘zgaruvchidan keyin ham foydalana oladi.",
+        ru:"Внутренняя функция может использовать переменную внешней функции.",
+        en:"An inner function can still use a variable from an outer function."
+      },
+      practice:{
+        uz:"Mashq: Closure JavaScript'da nima uchun foydali?",
+        ru:"Задание: чем замыкание полезно в JavaScript?",
+        en:"Practice: Why are closures useful in JavaScript?"
+      }
+    },
+    {
+      keys:["flexbox","флексбокс"],
+      title:{uz:"CSS Flexbox",ru:"CSS Flexbox",en:"CSS Flexbox"},
+      explain:{
+        uz:"Flexbox — CSS yordamida elementlarni qator yoki ustun bo‘ylab joylashtirish usuli.",
+        ru:"Flexbox — способ размещать элементы в строку или столбец с помощью CSS.",
+        en:"Flexbox is a CSS layout method for arranging elements in a row or column."
+      },
+      example:{
+        uz:"display: flex; ichki elementlarni moslashuvchan joylashtirishga yordam beradi.",
+        ru:"display: flex; помогает гибко размещать внутренние элементы.",
+        en:"display: flex; helps arrange child elements flexibly."
+      },
+      practice:{
+        uz:"Mashq: Flexbox'ni yoqish uchun qaysi CSS xususiyati ishlatiladi?",
+        ru:"Задание: какое CSS-свойство включает Flexbox?",
+        en:"Practice: Which CSS property enables Flexbox?"
+      }
+    },
+    {
+      keys:["api"],
+      title:{uz:"API",ru:"API",en:"API"},
+      explain:{
+        uz:"API — dasturlar bir-biri bilan ma’lumot almashishi uchun ishlatiladigan interfeys.",
+        ru:"API — интерфейс, который позволяет программам обмениваться данными.",
+        en:"An API is an interface that allows different programs to exchange data."
+      },
+      example:{
+        uz:"Ob-havo ilovasi API orqali serverdan harorat ma’lumotlarini olishi mumkin.",
+        ru:"Приложение погоды может получать температуру с сервера через API.",
+        en:"A weather app can get temperature data from a server through an API."
+      },
+      practice:{
+        uz:"Mashq: API orqali qanday ma’lumot olish mumkin?",
+        ru:"Задание: какие данные можно получить через API?",
+        en:"Practice: What information could an app get through an API?"
+      }
+    }
+  ];
+
+  const t=topics.find(item=>item.keys.some(k=>q.includes(k)));
+
+  if(!t){
+    const messages={
+      uz:"Bu mavzu bo‘yicha demo bazamda hozircha tayyor dars yo‘q. Kasr, tenglama, foiz, neyron tarmoq, rekursiya yoki API haqida so‘rab ko‘r. Eslatma: haqiqiy AI hali ulanmagan.",
+      ru:"Пока в демо-базе нет готового урока по этой теме. Попробуй спросить о дробях, уравнениях, процентах, нейронных сетях, рекурсии или API. Настоящий ИИ пока не подключён.",
+      en:"There is no prepared demo lesson for this topic yet. Try asking about fractions, equations, percentages, neural networks, recursion, or APIs. Real AI is not connected yet."
+    };
+    return messages[lang]||messages.uz;
+  }
+
+  const title=t.title[lang]||t.title.uz;
+  const explain=t.explain[lang]||t.explain.uz;
+
+  if(quick) return title+": "+explain;
+
+  const headings={
+    uz:["Tushuntirish: ","Misol: ","Mustahkamlash: "],
+    ru:["Объяснение: ","Пример: ","Практика: "],
+    en:["Explanation: ","Example: ","Practice: "]
+  };
+  const h=headings[lang]||headings.uz;
+
+  return title+"\n\n"+h[0]+explain+
+    "\n\n"+h[1]+(t.example[lang]||t.example.uz)+
+    "\n\n"+h[2]+(t.practice[lang]||t.practice.uz);
+},
 plan:p=>{let o='<table><tr><th>Week</th><th>Focus</th><th>Plan</th></tr>';for(let w=0;w<p.w;w++)o+=`<tr><td>${w+1}</td><td>${WK[w%8]}</td><td>${p.d} days × ${p.h}h on ${esc(p.s)}: ${Math.round(p.h*60*.5)} min new material, ${Math.round(p.h*60*.3)} min practice, ${Math.round(p.h*60*.2)} min recap.</td></tr>`;return o+"</table>"},
 code:p=>{const R=[[/^\s*<\/?(\w+)/,m=>`HTML tag <code>&lt;${m[1]}&gt;</code>: structures part of the page.`],[/^\s*([\w-]+)\s*:\s*[^;]+;/,m=>`CSS rule setting <code>${m[1]}</code>.`],[/^\s*[.#]?[\w-]+[^{]*\{/,()=>"CSS selector starting a style block."],[/(const|let|var)\s+(\w+)/,m=>`Declares ${m[1]==="const"?"a constant":"a variable"} named <code>${m[2]}</code>.`],[/function\s+(\w+)/,m=>`Defines function <code>${m[1]}</code>.`],[/=>/,()=>"Arrow function."],[/addEventListener/,()=>"Runs code when an event happens."],[/querySelector|getElementById/,()=>"Finds an element in the page."],[/^\s*(if|else)/,()=>"Conditional: runs only when the condition holds."],[/^\s*for|while/,()=>"Loop: repeats a block."],[/console\.log/,()=>"Prints a value to the console."],[/fetch\(/,()=>"Requests data from a URL."],[/return/,()=>"Sends a value back."]];
 const ls=p.x.split("\n").filter(l=>l.trim());if(!ls.length)return"Paste some code first.";return"<table>"+ls.map(l=>{let n="General statement or closing bracket.";for(const[r,f]of R){const m=l.match(r);if(m){n=f(m);break}}return`<tr><td><code>${esc(l.trim())}</code></td><td>${n}</td></tr>`}).join("")+"</table>"},
