@@ -121,8 +121,45 @@ const V={home(){const ft=[0,4,6,3,8,16].map(i=>card(C[i])).join("");return`<sect
 <section><div class="w"><h2>Student success stories</h2><p class="mu" style="font-size:13px">Sample stories for this demo.</p><div class="grid">${[["Amina K.","Moved from zero to my first front-end internship in five months.","Frontend"],["Luis M.","The daily goals kept me consistent. I finished AI Foundations in three weeks.","AI"],["Sofia P.","Flashcards and quizzes made statistics finally click before my exam.","Math"]].map(t=>`<div class="card"><p>“${t[1]}”</p><p style="margin-top:12px"><b>${t[0]}</b> <span class="pill">${t[2]}</span></p></div>`).join("")}</div></div></section>`},
 courses(){return`<section><div class="w"><h2>Explore courses</h2><div class="row" style="margin:14px 0"><label class="sr" for="q">Search</label><input id="q" type="search" placeholder="Search courses…" value="${esc(F.q)}" style="flex:1;min-width:200px"><select data-s="1" aria-label="Sort"><option value="pop" ${F.s==="pop"?"selected":""}>Most popular</option><option value="az" ${F.s==="az"?"selected":""}>A to Z</option><option value="lv" ${F.s==="lv"?"selected":""}>Level</option><option value="h" ${F.s==="h"?"selected":""}>Duration</option></select></div><div class="tabs"><button class="chip ${F.c<0?"on":""}" data-a="fc" data-i="-1">All</button>${CATS.map((c,i)=>`<button class="chip ${F.c===i?"on":""}" data-a="fc" data-i="${i}">${c}</button>`).join("")}</div><div class="grid" id="cl">${list()}</div></div></section>`},
 tools(){const TS=[["teach","AI Teacher"],["quiz","Quiz"],["plan","Study Planner"],["flash","Flashcards"],["code","Code Explainer"],["write","Writing Assistant"]],t=T.t;let b="";
-const fm=(tt,inner,ph)=>`<form data-f="ai" data-t="${tt}">${inner}<br><button class="btn" style="margin-top:10px">Run</button></form><div id="out" class="card" style="margin-top:14px" aria-live="polite">Results appear here.</div>`;
-if(t==="teach")b=`<div class="card" style="min-height:160px">${T.chat.length?T.chat.map(m=>`<div class="msg ${m[0]}">${esc(m[1])}</div>`).join(""):'<p class="mu">Ask about: neural network, closure, recursion, fraction, flexbox, API…</p>'}</div><form data-f="ai" data-t="teach" class="row" style="margin-top:12px"><input name="x" placeholder="Explain recursion" aria-label="Question" style="flex:1" required><button class="btn">Ask</button></form><div id="out"></div>`;
+
+if(t==="teach")b=`
+<div class="card">
+  <h3>🎓 AI Ustoz</h3>
+  <p class="mu">O‘zingga mos darsni tanla va savolingni ber.</p>
+  <div class="row" style="margin-top:14px">
+    <label>Sinf
+      <select name="grade">
+        ${Array.from({length:11},(_,i)=>`<option value="${i+1}">${i+1}-sinf</option>`).join("")}
+      </select>
+    </label>
+    <label>Til
+      <select name="lang">
+        <option value="uz">O‘zbekcha</option>
+        <option value="ru">Русский</option>
+        <option value="en">English</option>
+      </select>
+    </label>
+  </div>
+  <label style="display:block;margin-top:12px">Fan
+    <select name="subject" style="width:100%">
+      ${["Matematika","Fizika","Kimyo","Biologiya","Tarix","Geografiya","Ona tili","Ingliz tili","Rus tili","Dasturlash","Sun’iy intellekt","IELTS","Boshqa"].map(s=>`<option>${s}</option>`).join("")}
+    </select>
+  </label>
+  <label style="display:block;margin-top:12px">O‘rganish rejimi
+    <select name="mode" style="width:100%">
+      <option value="teacher">👩‍🏫 Ustoz kabi tushuntirish</option>
+      <option value="quick">⚡ Tezkor javob</option>
+    </select>
+  </label>
+</div>
+<div class="card" style="min-height:160px;margin-top:14px">
+  ${T.chat.length?T.chat.map(m=>`<div class="msg ${m[0]}">${esc(m[1])}</div>`).join(""):'<p class="mu">Salom! Men AI Ustozman. Qaysi mavzuni o‘rganamiz?</p>'}
+</div>
+<form data-f="ai" data-t="teach" class="row" style="margin-top:12px">
+  <input name="x" placeholder="Savolingizni yozing..." aria-label="Question" style="flex:1;min-width:180px" required>
+  <button class="btn">Yuborish</button>
+</form>
+<div id="out"></div>`;
 if(t==="quiz"){if(!Q.go)b=`<div class="card"><div class="row"><select onchange="Q.sub=this.value" aria-label="Subject">${Object.keys(QB).map(s=>`<option ${Q.sub===s?"selected":""}>${s}</option>`).join("")}</select><select onchange="Q.d=+this.value" aria-label="Difficulty">${["Easy (2)","Medium (3)","Hard (4)"].map((s,i)=>`<option value="${i}" ${Q.d===i?"selected":""}>${s}</option>`).join("")}</select><button class="btn" data-a="qs">Start quiz</button></div></div>`;else if(Q.i>=Q.qs.length)b=`<div class="card"><h3>Score: ${Q.s} / ${Q.qs.length}</h3><br><button class="btn" data-a="qs">Try again</button> <button class="btn g" onclick="Q.go=0;route(1)">New quiz</button></div>`;else{const q=Q.qs[Q.i];b=`<div class="card"><p class="mu">Question ${Q.i+1} of ${Q.qs.length}</p><h3>${q.q}</h3>${q.o.map((o,i)=>`<button class="opt ${Q.done?i===q.a?"ok":"":""}" data-a="qa" data-i="${i}">${o}</button>`).join("")}${Q.done?`<br><button class="btn" data-a="qn">${Q.i+1<Q.qs.length?"Next":"Finish"}</button>`:""}</div>`}}
 if(t==="plan")b=fm("plan",'<div class="row"><input name="s" placeholder="Subject" aria-label="Subject" required><label>Hours/day <input name="h" type="number" value="1" min=".5" max="8" step=".5" style="width:80px"></label><label>Days/week <input name="d" type="number" value="5" min="1" max="7" style="width:70px"></label><label>Weeks <input name="w" type="number" value="4" min="1" max="8" style="width:70px"></label></div>');
 if(t==="flash"){const d=DK[FC.d][FC.i];b=`<select onchange="FC.d=this.value;FC.i=0;FC.f=0;route(1)" aria-label="Deck">${Object.keys(DK).map(k=>`<option ${FC.d===k?"selected":""}>${k}</option>`).join("")}</select><br><br><div class="fc" role="button" tabindex="0" data-a="fl" onkeydown="if(event.key==='Enter')A.fl()">${FC.f?d[1]:d[0]}</div><p class="mu" style="text-align:center">Card ${FC.i+1} / ${DK[FC.d].length}. Click to flip.</p><div class="row" style="justify-content:center"><button class="btn g" data-a="fn" data-i="-1">Previous</button><button class="btn" data-a="fn" data-i="1">Next</button></div>`}
